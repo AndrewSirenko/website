@@ -210,7 +210,7 @@ For details, see [Out-of-tree volume plugins](#out-of-tree-volume-plugins).
 * [`csi`](#csi): a driver that implements the
   {{< glossary_tooltip text="Container Storage Interface" term_id="csi" >}}
   (CSI).
-* [`flexVolume`](#flexvolume) (deprecated): an older, exec-based plugin
+* [`flexVolume`](/docs/reference/storage/volume-types/#flexvolume) (deprecated): an older, exec-based plugin
   interface.
 
 {{< note >}}
@@ -462,59 +462,18 @@ For more details, refer to the deployment guide of the CSI plugin you wish to de
 
 #### Migrating to CSI drivers from in-tree plugins
 
-{{< feature-state for_k8s_version="v1.25" state="stable" >}}
+Kubernetes redirects operations for several older, in-tree volume types to the
+CSI driver that replaced them.
+For how that redirection works and which types it applies to, read
+[Migrated volume types](/docs/reference/storage/volume-types/#migrated-volume-types).
 
-The `CSIMigration` feature directs operations against existing in-tree
-plugins to corresponding CSI plugins (which are expected to be installed and configured).
-As a result, operators do not have to make any
-configuration changes to existing Storage Classes, PersistentVolumes, or PersistentVolumeClaims
-(referring to in-tree plugins) when transitioning to a CSI driver that supersedes an in-tree plugin.
-
-{{< note >}}
-Existing PVs created by an in-tree volume plugin can still be used in the future without any configuration
-changes, even after the migration to CSI is completed for that volume type, and even after you upgrade to a
-version of Kubernetes that doesn't have compiled-in support for that kind of storage.
-
-As part of that migration, you - or another cluster administrator - **must** have installed and configured
-the appropriate CSI driver for that storage. The core of Kubernetes does not install that software for you.
-
----
-
-After that migration, you can also define new PVCs and PVs that refer to the legacy, built-in
-storage integrations.
-Provided you have the appropriate CSI driver installed and configured, the PV creation continues
-to work, even for brand-new volumes. The actual storage management now happens through
-the CSI driver.
-{{< /note >}}
-
-The operations and features that are supported include:
-provisioning/delete, attach/detach, mount/unmount, and resizing of volumes.
-
-In-tree plugins that support `CSIMigration` and have a corresponding CSI driver implemented
-are listed in [Removed volume types](/docs/reference/storage/volume-types/#removed-volume-types).
-
-### flexVolume (deprecated)   {#flexvolume}
+### flexVolume (deprecated) {#flexvolume}
 
 {{< feature-state for_k8s_version="v1.23" state="deprecated" >}}
 
-FlexVolume is an out-of-tree plugin interface that uses an exec-based model to interface
-with storage drivers. The FlexVolume driver binaries must be installed in a pre-defined
-volume plugin path on each node, and in some cases, the control plane nodes as well.
-
-Pods interact with FlexVolume drivers through the `flexVolume` in-tree volume plugin.
-
-The following FlexVolume [plugins](https://github.com/Microsoft/K8s-Storage-Plugins/tree/master/flexvolume/windows),
-deployed as PowerShell scripts on the host, support Windows nodes:
-
-* [SMB](https://github.com/microsoft/K8s-Storage-Plugins/tree/master/flexvolume/windows/plugins/microsoft.com~smb.cmd)
-* [iSCSI](https://github.com/microsoft/K8s-Storage-Plugins/tree/master/flexvolume/windows/plugins/microsoft.com~iscsi.cmd)
-
-{{< note >}}
-FlexVolume is deprecated. Using an out-of-tree CSI driver is the recommended way to integrate external storage with Kubernetes.
-
-Maintainers of the FlexVolume driver should implement a CSI Driver and help migrate users of FlexVolume drivers to CSI.
-Users of FlexVolume should move their workloads to use the equivalent CSI Driver.
-{{< /note >}}
+FlexVolume is a deprecated, exec-based plugin interface. Use a CSI driver instead.
+For details, read
+[flexVolume](/docs/reference/storage/volume-types/#flexvolume) in the volume types reference.
 
 ## Mount propagation
 

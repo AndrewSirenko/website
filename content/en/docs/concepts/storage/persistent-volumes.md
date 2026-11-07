@@ -510,7 +510,7 @@ PersistentVolume types are implemented as plugins. Kubernetes currently supports
 
 The following PersistentVolume types use legacy storage integrations.
 Except for `flexVolume`, their in-tree drivers have been removed, but their API fields
-remain usable through [CSI migration](/docs/concepts/storage/volumes/#migrating-to-csi-drivers-from-in-tree-plugins)
+remain usable through [CSI migration](/docs/reference/storage/volume-types/#migrated-volume-types)
 when the corresponding CSI driver is installed.
 `flexVolume` is deprecated but remains supported without CSI migration.
 
@@ -522,7 +522,7 @@ when the corresponding CSI driver is installed.
   (**migration on by default** starting v1.24)
 * [`cinder`](/docs/reference/storage/volume-types/#cinder) - Cinder (OpenStack block storage)
   (**migration on by default** starting v1.21)
-* [`flexVolume`](/docs/concepts/storage/volumes/#flexvolume) - FlexVolume
+* [`flexVolume`](/docs/reference/storage/volume-types/#flexvolume) - FlexVolume
   (**deprecated** starting v1.23, no migration plan and no plan to remove support)
 * [`gcePersistentDisk`](/docs/reference/storage/volume-types/#gcepersistentdisk) - GCE Persistent Disk
   (**migration on by default** starting v1.23)
