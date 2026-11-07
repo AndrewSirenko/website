@@ -706,15 +706,54 @@ non-volatile storage.
 
 For more details, see [Configuring Secrets](/docs/concepts/configuration/secret/).
 
+## Deprecated volume types {#deprecated-volume-types}
+
+### flexVolume (deprecated) {#flexvolume}
+
+{{< feature-state for_k8s_version="v1.23" state="deprecated" >}}
+
+FlexVolume is an out-of-tree plugin interface that uses an exec-based model to interface
+with storage drivers. The FlexVolume driver binaries must be installed in a pre-defined
+volume plugin path on each node, and in some cases, the control plane nodes as well.
+
+Pods interact with FlexVolume drivers through the `flexVolume` in-tree volume plugin.
+
+{{< note >}}
+FlexVolume is deprecated. Using an out-of-tree CSI driver is the recommended way to integrate external storage with Kubernetes.
+
+Maintainers of the FlexVolume driver should implement a CSI Driver and help migrate users of FlexVolume drivers to CSI.
+Users of FlexVolume should move their workloads to use the equivalent CSI Driver.
+{{< /note >}}
+
 ## Removed volume types {#removed-volume-types}
 
 Kubernetes {{< skew currentVersion >}} does not include the in-tree drivers
 for the following volume types, though their fields still exist in the Pod
-API.
-Some of these types are redirected to a
-{{< glossary_tooltip text="CSI" term_id="csi" >}} driver.
+and PersistentVolume APIs.
+You should not use any of these types for new workloads.
 
-### awsElasticBlockStore (removed) {#awselasticblockstore}
+### Migrated volume types {#migrated-volume-types}
+
+{{< feature-state for_k8s_version="v1.25" state="stable" >}}
+
+These volume types still work, but only because of _CSI migration_:
+Kubernetes translates each operation (provision, delete, attach, detach,
+mount, unmount, and resize) for the in-tree type into a call to the CSI
+driver that replaced it.
+Existing StorageClasses, PersistentVolumes, and PersistentVolumeClaims that
+use these types keep working without configuration changes.
+
+{{< note >}}
+CSI migration only works if you, or another cluster administrator, have
+installed and configured the replacement CSI driver. Kubernetes does not
+install it for you.
+
+New workloads should use the CSI driver directly, with the `csi` volume type
+or a StorageClass whose `provisioner` is the CSI driver name, rather than the
+legacy in-tree field.
+{{< /note >}}
+
+#### awsElasticBlockStore (migrated) {#awselasticblockstore}
 
 The in-tree `awsElasticBlockStore` driver was removed in Kubernetes v1.27.
 Kubernetes redirects all operations for this type to the `ebs.csi.aws.com`
@@ -722,7 +761,7 @@ CSI driver.
 Use the
 [AWS EBS CSI driver](https://github.com/kubernetes-sigs/aws-ebs-csi-driver) instead.
 
-### azureDisk (removed) {#azuredisk}
+#### azureDisk (migrated) {#azuredisk}
 
 The in-tree `azureDisk` driver was removed in Kubernetes v1.27.
 Kubernetes redirects all operations for this type to the `disk.csi.azure.com`
@@ -730,7 +769,7 @@ CSI driver.
 Use the
 [Azure Disk CSI driver](https://github.com/kubernetes-sigs/azuredisk-csi-driver) instead.
 
-### azureFile (removed) {#azurefile}
+#### azureFile (migrated) {#azurefile}
 
 The in-tree `azureFile` driver was removed in Kubernetes v1.30.
 Kubernetes redirects all operations for this type to the `file.csi.azure.com`
@@ -738,25 +777,14 @@ CSI driver.
 Use the
 [Azure File CSI driver](https://github.com/kubernetes-sigs/azurefile-csi-driver) instead.
 
-### cephfs (removed) {#cephfs}
-
-The in-tree `cephfs` driver was removed in Kubernetes v1.31.
-A `cephfs` volume no longer works.
-Use the [Ceph CSI driver](https://github.com/ceph/ceph-csi/) instead.
-
-### cinder (removed) {#cinder}
+#### cinder (migrated) {#cinder}
 
 The in-tree `cinder` driver was removed in Kubernetes v1.26.
 Kubernetes redirects all operations for this type to the
 `cinder.csi.openstack.org` CSI driver.
 Use the [OpenStack Cinder CSI driver](https://github.com/kubernetes/cloud-provider-openstack/blob/master/docs/cinder-csi-plugin/using-cinder-csi-plugin.md) instead.
 
-### flocker (removed) {#flocker}
-
-The in-tree `flocker` driver was removed in Kubernetes v1.25.
-`flocker` volumes no longer work.
-
-### gcePersistentDisk (removed) {#gcepersistentdisk}
+#### gcePersistentDisk (migrated) {#gcepersistentdisk}
 
 The in-tree `gcePersistentDisk` driver was removed in Kubernetes v1.28.
 Kubernetes redirects all operations for this type to the
@@ -765,17 +793,7 @@ Use the
 [Google Compute Engine Persistent Disk CSI driver](https://github.com/kubernetes-sigs/gcp-compute-persistent-disk-csi-driver)
 instead.
 
-### glusterfs (removed) {#glusterfs}
-
-The in-tree `glusterfs` driver was removed in Kubernetes v1.26.
-`glusterfs` volumes no longer work.
-
-### photonPersistentDisk (removed) {#photonpersistentdisk}
-
-The in-tree `photonPersistentDisk` driver was removed in Kubernetes v1.16.
-`photonPersistentDisk` volumes no longer work.
-
-### portworxVolume (removed) {#portworxvolume}
+#### portworxVolume (migrated) {#portworxvolume}
 
 The in-tree `portworxVolume` driver was removed in Kubernetes v1.36.
 Kubernetes redirects all operations for this type to the `pxd.portworx.com`
@@ -784,37 +802,61 @@ Use the
 [Portworx CSI driver](https://docs.portworx.com/portworx-enterprise/operations/operate-kubernetes/storage-operations/csi)
 instead.
 
-### quobyte (removed) {#quobyte}
-
-The in-tree `quobyte` driver was removed in Kubernetes v1.25.
-`quobyte` volumes no longer work.
-Use the [Quobyte CSI driver](https://github.com/quobyte/quobyte-csi-driver)
-instead.
-
-### rbd (removed) {#rbd}
-
-The in-tree `rbd` driver was removed in Kubernetes v1.31, together with its
-CSI migration support.
-`rbd` volumes no longer work.
-Use the [Ceph CSI driver](https://github.com/ceph/ceph-csi/) instead.
-
-### scaleIO (removed) {#scaleio}
-
-The in-tree `scaleIO` driver was removed in Kubernetes v1.22.
-`scaleIO` volumes no longer work.
-ScaleIO is now called Dell PowerFlex.
-Use the [PowerFlex CSI driver](https://github.com/dell/csi-powerflex) instead.
-
-### storageos (removed) {#storageos}
-
-The in-tree `storageos` driver was removed in Kubernetes v1.25.
-`storageos` volumes no longer work.
-
-### vsphereVolume (removed) {#vspherevolume}
+#### vsphereVolume (migrated) {#vspherevolume}
 
 The in-tree `vsphereVolume` driver was removed in Kubernetes v1.30.
 Kubernetes redirects all operations for this type to the
 `csi.vsphere.vmware.com` CSI driver.
 Use the
 [vSphere CSI driver](https://github.com/kubernetes-sigs/vsphere-csi-driver)
+instead.### Non-functional volume types {#non-functional-volume-types}
+
+These volume types no longer work. Kubernetes accepts the fields, but no
+driver handles them.
+
+#### cephfs (removed) {#cephfs}
+
+The in-tree `cephfs` driver was removed in Kubernetes v1.31.
+A `cephfs` volume no longer works.
+Use the [Ceph CSI driver](https://github.com/ceph/ceph-csi/) instead.
+
+#### flocker (removed) {#flocker}
+
+The in-tree `flocker` driver was removed in Kubernetes v1.25.
+`flocker` volumes no longer work.
+
+#### glusterfs (removed) {#glusterfs}
+
+The in-tree `glusterfs` driver was removed in Kubernetes v1.26.
+`glusterfs` volumes no longer work.
+
+#### photonPersistentDisk (removed) {#photonpersistentdisk}
+
+The in-tree `photonPersistentDisk` driver was removed in Kubernetes v1.16.
+`photonPersistentDisk` volumes no longer work.
+
+#### quobyte (removed) {#quobyte}
+
+The in-tree `quobyte` driver was removed in Kubernetes v1.25.
+`quobyte` volumes no longer work.
+Use the [Quobyte CSI driver](https://github.com/quobyte/quobyte-csi-driver)
 instead.
+
+#### rbd (removed) {#rbd}
+
+The in-tree `rbd` driver was removed in Kubernetes v1.31, together with its
+CSI migration support.
+`rbd` volumes no longer work.
+Use the [Ceph CSI driver](https://github.com/ceph/ceph-csi/) instead.
+
+#### scaleIO (removed) {#scaleio}
+
+The in-tree `scaleIO` driver was removed in Kubernetes v1.22.
+`scaleIO` volumes no longer work.
+ScaleIO is now called Dell PowerFlex.
+Use the [PowerFlex CSI driver](https://github.com/dell/csi-powerflex) instead.
+
+#### storageos (removed) {#storageos}
+
+The in-tree `storageos` driver was removed in Kubernetes v1.25.
+`storageos` volumes no longer work.

@@ -57,7 +57,7 @@ Volume management components are shipped as Kubernetes volume
 [plugin](/docs/concepts/storage/volumes/#volume-types).
 The following broad classes of Kubernetes volume plugins are supported on Windows:
 
-* [`FlexVolume plugins`](/docs/concepts/storage/volumes/#flexvolume)
+* [`FlexVolume plugins`](/docs/reference/storage/volume-types/#flexvolume)
   * Please note that FlexVolumes have been deprecated as of 1.23
 * [`CSI Plugins`](/docs/concepts/storage/volumes/#csi)
 
